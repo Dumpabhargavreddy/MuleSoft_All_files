@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="df89143d-6591-484c-ba92-a4f6215f675d" >
+		<jms:active-mq-connection username="admin" password="admin">
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="df1001bd-63e4-4312-aa60-0a31abe682b7" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="jmsdemoFlow" doc:id="423e8c47-d997-46b5-90ee-9e87ada11801" >
+		<jms:listener doc:name="On New Message" doc:id="b59f7227-8733-49eb-a78f-5cbccbd69a0a" config-ref="JMS_Config" destination="Queue.User.Consume	">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="28830634-6793-4002-b11f-3165f277ff5c" message="#[payload]"/>
+	</flow>
+	<flow name="jmsdemoFlow1" doc:id="4958c9c9-785c-4a19-8b0c-cf62e3b00468" >
+		<http:listener doc:name="Listener" doc:id="3f887023-ad97-47cb-a686-011f90286a0b" config-ref="HTTP_Listener_config" path="/jms1"/>
+		<jms:consume doc:name="Consume" doc:id="83a6837c-0eed-4a6b-abf4-08a1a59ce08a" config-ref="JMS_Config" destination="Queue.User.Consume	">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:consume>
+		<logger level="INFO" doc:name="Logger" doc:id="497fc77b-bc75-47b3-95fd-84147f13fdd3" message="#[payload]"/>
+	</flow>
+</mule>

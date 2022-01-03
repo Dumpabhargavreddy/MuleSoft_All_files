@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2d5ca9d3-6351-49da-a640-f251deb86367" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="subflow1-bhaFlow" doc:id="b3f88b7a-edda-4422-8699-0409a008e294" >
+		<http:listener doc:name="Listener" doc:id="c4978b16-225d-4561-b53d-d8b1ab36c4cd" config-ref="HTTP_Listener_config" path="/subflow"/>
+		<set-payload value='#["bhargav"]' doc:name="Set Payload" doc:id="b928101c-6fa4-488e-a212-94f03a92a411" />
+		<flow-ref doc:name="Flow Reference" doc:id="1efd24af-ce97-4c25-91d8-a0360ee8a030" name="subflow1-bhaSub_Flow"/>
+	</flow>
+	<sub-flow name="subflow1-bhaSub_Flow" doc:id="d65f15f1-f42c-43b4-9b74-0169ad36abf4" >
+		<try doc:name="Try" doc:id="e09479b2-3680-4333-8633-9567c81871f1" >
+			<http:request method="GET" doc:name="Request" doc:id="f72f1b60-ed0a-4d91-baae-062be45dc936" url="hjgcfgghg" />
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e91c49d3-5fe8-4440-9d4a-cdad00baea4b" type="HTTP:CONNECTIVITY">
+					<ee:transform doc:name="Transform Message" doc:id="b8f38582-5b98-4ed8-9977-1842fea191c7">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+"response" : "sekhar"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>

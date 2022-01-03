@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c2a9d7d1-81d9-4e71-8863-aa81cfcf651d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<validation:config name="Validation_Config" doc:name="Validation Config" doc:id="4c254255-e7d6-4b81-bf4f-e5bd90802e86" />
+	<configuration doc:name="Configuration" doc:id="65b1d629-e728-48a9-99b1-687735b382af" defaultErrorHandler-ref="errorhandlers4-bhargavError_Handler" />
+	<flow name="errorhandlers4-bhargavFlow" doc:id="c30317a9-4e2f-4882-b71f-ee714ba0f599" >
+		<http:listener doc:name="Listener" doc:id="12ac7cad-c7c0-4483-b05c-d0d1c7226d09" config-ref="HTTP_Listener_config" path="/error"/>
+		<choice doc:name="Choice" doc:id="30540e34-19d8-47a0-ae08-f819a9ae5c10" >
+			<when expression="#[isEmpty(payload)]">
+				<raise-error doc:name="Raise error" doc:id="351f3162-4435-48ce-82b2-ae7c52779366" type="NO:PAYLOAD" description="PAYLOAD AS NOT PRESENT"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="0c688715-e938-4f94-b53d-8bdbff44d8c4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+	<error-handler name="errorhandlers4-bhargavError_Handler" doc:id="5bdcd99d-4eba-466f-b640-b08a3d9e26b0" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="521272fb-98f7-4973-8417-943c66969c49" type="NO:PAYLOAD">
+			<ee:transform doc:name="Transform Message" doc:id="d0c21186-b819-48e0-bb81-764970cecf5a" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"ERROR" :"HDHD"
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+	<flow name="errorhandlers4-bhargavFlow1" doc:id="8c29f89a-45c4-4428-9b1c-1634906ca2df" >
+		<http:listener doc:name="Listener" doc:id="827ef4a3-33c2-449b-bd2e-f9f3293b3ae3" config-ref="HTTP_Listener_config" path="/try"/>
+		<set-payload value='#["bhargav"]' doc:name="Set Payload" doc:id="a1f2bab1-b648-4f11-83ad-f73b8e9d59f5" />
+		<try doc:name="Try" doc:id="f6121b52-4da6-4aa4-b3ce-b1af308d6585" >
+			<validation:is-number numberType="INTEGER" doc:name="Is number" doc:id="399e460f-2975-43df-90ab-bda92952f5f1" config-ref="Validation_Config" value="#[payload]" />
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="50112076-6f6d-48fb-a50c-6a620e921694" type="VALIDATION:INVALID_NUMBER">
+					<set-payload value='#["error inside the try block error handler"]' doc:name="Set Payload" doc:id="092a0187-6aa6-4ae6-9352-28feb8710feb" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="4fe62b07-94a9-4ceb-b0f5-0b8af2bb2576" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

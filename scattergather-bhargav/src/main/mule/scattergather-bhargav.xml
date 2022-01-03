@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c597d9df-e69f-4e2f-b2de-110cc550278c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="scattergather-bhargavFlow" doc:id="99b53590-220b-4c1a-afa5-7bb04b777845" >
+		<http:listener doc:name="Listener" doc:id="e21622be-7db2-47dc-8426-fcb540901955" config-ref="HTTP_Listener_config" path="/scatter"/>
+		<set-payload value="#['bhargav']" doc:name="Set Payload" doc:id="cc635d04-91a2-448f-8afc-6a79df52b18e" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="a246df4e-1e6f-4214-852d-7a745902b134" >
+			<route >
+				<set-variable value="#[payload ++ &quot; &quot;++ 'route1']" doc:name="route1" doc:id="efb168b0-34e2-41f1-b2c9-e6841cfd274e" variableName="nameroute1"/>
+				<set-payload value="#[payload ++ &quot; &quot;++ 'route1']" doc:name="Set Payloadr1" doc:id="eba9d421-e260-47f6-845e-c1aea935cfdb" />
+			</route>
+			<route >
+				<set-variable value="#[payload ++ &quot; &quot;++ 'route2']" doc:name="route2" doc:id="444d91b3-7c2c-4b21-88eb-f39befd746cf" variableName="nameroute2"/>
+				<set-payload value="#[payload ++ &quot; &quot;++ 'route2']" doc:name="Set Payloadr2" doc:id="a80f1b2a-d752-4475-825e-1ed1fc676766" />
+			</route>
+			<route >
+				<set-variable value="#[payload ++ &quot; &quot;++ 'route3']" doc:name="route3" doc:id="2a839cbd-195e-41e1-ae7b-0e2d48d001d5" variableName="nameroute3"/>
+				<set-payload value="#[payload ++ &quot; &quot;++ 'route3']" doc:name="Set Payloadr3" doc:id="5b09681d-9cdf-4f76-90c2-225ec4fd470d" />
+			</route>
+		</scatter-gather>
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="aggregator" doc:id="e4f03531-7408-4ea1-82a5-e2a2c2f31a42" />
+	</flow>
+</mule>

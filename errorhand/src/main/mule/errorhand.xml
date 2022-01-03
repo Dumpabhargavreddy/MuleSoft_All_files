@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="15cea187-2104-432f-9f12-fbc166f6e0c2" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="errorhandFlow" doc:id="fbd8a79c-e8b6-4c41-902d-5dce994929ad" >
+		<http:listener doc:name="Listener" doc:id="41d0912d-d86c-4df7-b2bc-d98c6b7b913c" config-ref="HTTP_Listener_config" path="/error">
+		</http:listener>
+		<set-payload value='#["default erreor handler"]' doc:name="Set Payload" doc:id="6b1e8ee1-2be1-4166-8543-2d0e8c4ba056" />
+		<http:request method="GET" doc:name="Request" doc:id="dea184ea-b1d4-45a2-9183-6ba3fcfe937c" url="gg.hh.f"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f220fa0d-b012-4976-95a0-68fa335dcd59" type="HTTP:CONNECTIVITY">
+				<set-payload value='#["this error is being handled by custom error handler"]' doc:name="Set Payload" doc:id="d978103d-85dc-416f-83a4-13c38711f63d" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="errorhandFlow1" doc:id="2f4fe460-d5f1-451c-98a9-ca279e80964f" />
+</mule>

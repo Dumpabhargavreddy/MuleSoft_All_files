@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d63a6038-ddc0-4157-8156-5475258b1f58" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="gitprogram-bhargavFlow" doc:id="7ff63b6e-477a-42aa-b687-b727eac84707" >
+		<http:listener doc:name="Listener" doc:id="235451d0-2eac-4b2f-a4f6-6882d168deb7" config-ref="HTTP_Listener_config" path="/git1"/>
+		<set-payload value="myfirstgit project" doc:name="Set Payload" doc:id="eb8c5c8f-94da-426e-a091-733d0c51e767" />
+		<logger level="INFO" doc:name="Logger" doc:id="ec2e9bef-2221-47f8-8e40-daa4bd210d0a" message="myfirstgit project"/>
+	</flow>
+</mule>

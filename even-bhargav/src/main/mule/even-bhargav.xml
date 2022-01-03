@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="140b0d9a-d84f-4be9-8b60-571e101cc035" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="even-bhargavFlow" doc:id="fed544da-2f76-44f1-a41e-4f59c923f54b" >
+		<http:listener doc:name="Listener" doc:id="90885682-cbc8-48f1-836b-a3239383ad01" config-ref="HTTP_Listener_config" path="/even"/>
+		<set-variable value="#[attributes.queryParams.q1]" doc:name="Set Variable" doc:id="867f01c7-4abc-47f1-84f7-270f35f05161" variableName="dwName"/>
+		<ee:transform doc:name="Transform Message" doc:id="d4a11ead-fb8e-440d-a759-429598647783" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	
+replacedName: vars.dwName replace 'red' with('456')
+
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="92f24464-740c-4ff3-ad1e-7fca19aa94c0" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="dc301a8d-f2ed-4e40-97e1-1eea4fc0494b" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="customer" />
+	</db:config>
+	<flow name="mule4-assesmentFlow" doc:id="055424e8-ed97-470a-851c-514a5fcf14f0" >
+		<http:listener doc:name="Listener" doc:id="63340a70-ed23-44cc-aa8f-524c2cfcbe14" config-ref="HTTP_Listener_config" path="/even1"/>
+		<db:select doc:name="Select" doc:id="ec240bfb-432c-4ad2-af1d-26f4a218871b" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from customer.new_table;]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="482e03f4-f8d7-4120-b6db-63b6ccd51df1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="mule4-assesmentFlow1" doc:id="e993829f-6f69-415b-a7ad-0d0c7450c9af" >
+		<http:listener doc:name="Listener" doc:id="81b63678-3458-495f-993f-62d8891c475c" config-ref="HTTP_Listener_config" path="/insertdata"/>
+		<db:insert doc:name="Insert" doc:id="9047bc3f-5d0e-4c22-be26-5070aedd1f14" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into customer.new_table (customer_name,id,DOB,city,gender) values ('karthik',8036,'2000-04-02','kadapa','male');]]></db:sql>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="d650c8b3-ffce-4f99-bb6d-262d6f03c292" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

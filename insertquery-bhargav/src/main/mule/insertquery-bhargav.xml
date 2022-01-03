@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2dfa5997-1b2f-4df5-896f-1b405dac15d6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config1" doc:name="Database Config" doc:id="86ff94a3-9513-465d-abe6-cffde04a22f8" >
+		<db:mssql-connection host="${sqldb.host}" port="${sqldb.port}" user="${sqldb.user}" password="${sqldb.password}" databaseName="${sqldb.dbName}" />
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="570ae9f2-4d9a-439a-a04e-141ba7d6bbd2" file="property\folderyaml\dev.yaml" />
+	<flow name="insertquery-bhargavFlow" doc:id="ff492807-a482-44bd-9bc1-24fabe729b39" >
+		<http:listener doc:name="Listener" doc:id="7c23be99-4a58-4116-a7a9-3406d2b2eef6" config-ref="HTTP_Listener_config" path="/insertquery"/>
+		<logger level="INFO" doc:name="Logger" doc:id="7ac71553-ba46-4af5-866a-00141c01903c" message="Startingflow- #[flow.name] -#[payload]s"/>
+		<db:insert doc:name="Insert" doc:id="c25937a6-7ddb-4b4f-8da9-d1b31651b7e4" config-ref="Database_Config1">
+			<db:sql ><![CDATA[insert into production.categories(category_name) values ('Bhargav')]]></db:sql>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="8612480d-0bf9-4f2d-9577-d3e495caa7e6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

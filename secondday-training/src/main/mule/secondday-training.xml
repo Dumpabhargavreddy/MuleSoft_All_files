@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="secondday-trainingFlow" doc:id="8e8c273f-2ec4-4e73-bad3-d48e90acdf6a" >
+		<ee:transform doc:name="Transform Message" doc:id="f56fb4e6-8ce5-4209-8a1a-b9b5aa3733e8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+
+---
+var profiles:[
+{
+	"name" : "bhargav",
+	"tech" : "mule",
+	"id" : 001
+},
+{
+	"name" : "reddy",
+	"tech": "mulesoft",
+	"id" : 002,
+},
+{
+	"name" : "naveen",
+	"tech" : "devops"
+	"id" : 003
+}
+
+output application/json
+---
+]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

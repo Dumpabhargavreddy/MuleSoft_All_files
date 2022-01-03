@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5daf1bb1-6049-4a18-95a6-7eb2a4e3446a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="dwl-bhargavFlow" doc:id="a4d89f37-030e-48bb-adb0-cd2aa24a39fb" >
+		<http:listener doc:name="Listener" doc:id="f095da95-3445-4fe5-a8e7-e57811ad0144" config-ref="HTTP_Listener_config" path="/dwlb"/>
+		<http:request method="GET" doc:name="Request" doc:id="286141e7-3352-48e1-8fa4-19e42809ac9e" url="https://api.openweathermap.org/data/2.5/weather?q=bangalore&amp;appid=253ebd039d4389378508f09d94b72d23"/>
+		<ee:transform doc:name="Transform Message" doc:id="4aeac2a5-b3b6-455d-b009-bf2501a5d62d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output xml
+
+---
+
+root:	{
+"city name" :payload.city.name,
+"minimum temp":payload.list.main.temp_min,
+"Maximum temp" :payload.list.main.temp_max,
+"pressure" :payload.list.Pressure,
+"sealevel":payload.list.sea_level
+}
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

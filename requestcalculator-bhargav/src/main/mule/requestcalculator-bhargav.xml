@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="849b9e72-b16a-4aa7-ab51-04c42192fa18" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="requestcalculator-bhargavFlow" doc:id="6b41361b-21cd-4ac5-9be8-7728c3706072" >
+		<http:listener doc:name="Listener" doc:id="f1accc90-ea41-469f-ae3a-6b8bb8622cb6" config-ref="HTTP_Listener_config" path="/request"/>
+		<http:request method="GET" doc:name="Request" doc:id="3eb9b82f-8e7f-4a35-bbab-1961b771fc1a" />
+	</flow>
+</mule>

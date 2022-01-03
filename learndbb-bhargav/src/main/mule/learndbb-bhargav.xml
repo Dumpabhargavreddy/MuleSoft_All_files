@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="74c036cb-4f70-4226-9358-baf3a3df0a8c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="50faea94-8534-4e8c-b4af-e79dc95a29c4" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="learn" />
+	</db:config>
+	<flow name="learndbb-bhargavFlow" doc:id="02474850-57bc-445f-9933-36f6e8c7f0b0" >
+		<http:listener doc:name="Listener" doc:id="eaf5047a-ccec-4e15-9d12-727638d5b6c9" config-ref="HTTP_Listener_config" path="/dbb"/>
+		<db:select doc:name="Select" doc:id="76aa67b3-20c6-499a-aeba-2e00fd1e96ad" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM learn.accountfolders where account_id= :id;]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id : attributes.queryParams.id
+}]]]></db:input-parameters>
+		</db:select>
+		<choice doc:name="Choice" doc:id="24964865-6d55-4fba-b8c2-582f469db0c8" >
+			<when expression="#[isEmpty(payload)]">
+				<ee:transform doc:name="Transform Message" doc:id="5ef8610d-5fac-43cb-9116-a36aed549cdd">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+"message" : "404 error not found"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="3fcbf5fc-60cf-44d5-8890-6495556bb398" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="93dc9ef4-2609-4fe3-8fb3-fc502a0fbb03" message="logger"/>
+	</flow>
+	<flow name="learndbb-bhargavFlow1" doc:id="5fbf5a80-731f-4f90-8578-e2086410b996" >
+		<http:listener doc:name="Listener" doc:id="73b0da0f-c920-4b1e-9b19-1f6abbd8ce12" config-ref="HTTP_Listener_config" path="/listen"/>
+		<choice doc:name="Choice" doc:id="26088e43-3a20-42ba-aa0e-8994e1d27488" >
+			<when expression="#[isEmpty(payload)]">
+				<ee:transform doc:name="Transform Message" doc:id="c83aecf4-e572-4cb8-81a9-7988b46ea1c5">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "404 not found"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="0f3c3f79-7641-4281-8cc8-624b38d705b9" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

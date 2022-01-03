@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="99b19c73-a985-46a3-9d12-72c577f6cd9e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="day4assesFlow" doc:id="ff7401ea-cb75-459d-919e-22db4d77dc70" >
+		<http:listener doc:name="Listener" doc:id="e8f16bf4-ac0b-426e-89ab-5c17e59b4577" config-ref="HTTP_Listener_config" path="/assesment">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<flow-ref doc:name="Flow Reference" doc:id="334f6997-9600-46e8-9dde-04825611f496" name="day4assesFlow1"/>
+		<set-payload value='#["default error handling block"]' doc:name="Set Payload" doc:id="ebe05664-3495-414c-8d62-c90ca42d3f71" />
+	</flow>
+	<flow name="day4assesFlow1" doc:id="7af1fa70-01e3-445c-9ad6-50567e60b58c" >
+		<set-payload value='#["hello"]' doc:name="Set Payload" doc:id="85455bec-6933-48ea-a920-27df933fcfb2" />
+		<http:request method="GET" doc:name="Request" doc:id="62d3121c-67bb-4ad8-8ce4-b56a9877e358" url="gregjs"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="413c8850-ab82-4771-aee6-cd284830f6dd" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="f0fd49eb-ee49-4bd5-841e-3b6c3ec6a0e5" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="day4assesFlow2" doc:id="61592c3f-7445-4638-acd8-f65beafef416" >
+		<http:listener doc:name="Listener" doc:id="2cd18752-00e7-4fe1-a2aa-e34e535bc5bc" config-ref="HTTP_Listener_config" path="/assesment1">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<set-payload value='#["default error handler"]' doc:name="Set Payload" doc:id="3fba7cb1-ca4a-426a-89f6-7abfca268c6f" />
+		<flow-ref doc:name="Flow Reference" doc:id="d305fcba-a70a-4241-9813-e956211ab507" name="day4assesFlow3"/>
+	</flow>
+	<flow name="day4assesFlow3" doc:id="90760b6d-934d-4c00-b578-1c5f32b2994e" >
+		<set-payload value='#["welcome to private flow"]' doc:name="Set Payload" doc:id="4b39cb20-2d37-4a6d-84d1-05d5cc0315bf" />
+		<http:request method="GET" doc:name="Request" doc:id="4d2cb269-874a-4fa9-823d-138a58ba229a" url="aryagahsbs"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="568435f1-1a27-4fa9-a562-9758b0ee6c70" type="HTTP:CONNECTIVITY">
+				<ee:transform doc:name="Transform Message" doc:id="89e44dfd-3988-4101-bbb2-2320ec7e8470" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

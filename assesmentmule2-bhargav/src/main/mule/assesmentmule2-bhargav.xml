@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="609801e3-bb25-4b8c-bae7-712ca1c2f2ee" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="assesmentmule2-bhargavFlow" doc:id="47d49ace-e36f-448c-88aa-67e8ab2a2906" >
+		<http:listener doc:name="Listener" doc:id="142363af-2be3-4955-beec-d10a79b6e13e" config-ref="HTTP_Listener_config" path="/ok"/>
+		<java:invoke-static doc:name="Invoke static" doc:id="28d3a589-ffcd-4430-8448-529b9c055ea9" class="project2.sales" method="checkProduct(int)">
+			<java:args ><![CDATA[#[{
+	arg0: attributes.queryParams.number as Number
+}]]]></java:args>
+		</java:invoke-static>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="bb9b2fe2-8d05-4921-bc56-11ecd0074156" variableName="CorrelationId"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2ecbfe30-ad98-4ef9-868f-29ffd76d27d5" message="CorrelationId- #[vars.CorrelationId]- #[payload]"/>
+		<choice doc:name="Choice" doc:id="58a22307-94aa-4831-875e-886c52f0480b" >
+			<when expression="#[payload == true]">
+				<set-payload value="valid input id" doc:name="Set Payload" doc:id="e05bb72c-f9c1-4a86-9e16-7bd85b6fb887" />
+				<logger level="INFO" doc:name="Logger" doc:id="7dbadbc3-a174-4633-9a4e-55860f0ae280" message="valid"/>
+			</when>
+			<otherwise >
+				<set-payload value="Not valid input id" doc:name="Set Payload" doc:id="c5b6038d-9afd-4c31-a1c1-90f7b83f2ee6" />
+				<logger level="INFO" doc:name="Logger" doc:id="9cfbbddf-d4d6-44ff-9bd1-f8a92838e210" message="Invalid"/>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="assesmentmule2-bhargavFlow1" doc:id="d716ddd8-6d40-4670-be04-19937b5b6eda" >
+		<http:listener doc:name="Listener" doc:id="c0299239-56c5-4a69-8d74-1117166551c0" config-ref="HTTP_Listener_config" path="/getmethod"/>
+		<java:new constructor="sales()" doc:name="New" doc:id="1f9e430a-e6bd-4f59-866b-a315901cde08" class="project2.sales" target="abc"/>
+		<java:invoke method="getAmount(java.lang.String)" doc:name="Invoke" doc:id="9d00675b-72ce-4b48-beb6-3f739e35c0ce" instance="#[vars.abc]" class="project2.sales" target="abc">
+			<java:args ><![CDATA[#[{
+	arg0:payload.size as String
+}]]]></java:args>
+		</java:invoke>
+		<ee:transform doc:name="Transform Message" doc:id="35b175d3-ae6a-49a6-a7f2-f82d405ac3a3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"total amount is": payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

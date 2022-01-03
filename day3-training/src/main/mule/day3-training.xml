@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8f2bc90d-6b74-4a3c-878c-e94bce8f5460" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="day3-trainingFlow" doc:id="ea779f2c-2afc-4dab-bddc-11cc80466107" >
+		<http:listener doc:name="Listener" doc:id="17fe4bce-4b2b-4772-b581-ebf962751392" config-ref="HTTP_Listener_config" path="/day3"/>
+		<ee:transform doc:name="Transform Message" doc:id="245ca561-314a-489f-b2ec-2eda93245490" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+  payload filter $.age > 27 map (item, index) ->
+
+{
+
+"name":(item.firstName ++ " " ++ item.lastName),
+
+"age" : item.age,
+
+"salary":item.salary
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

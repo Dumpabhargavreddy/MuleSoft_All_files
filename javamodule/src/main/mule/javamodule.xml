@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="dee4ed09-0957-44b9-93be-12e79f45b713" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="64d074e1-a7c0-4b58-97d5-de5cfe8f0977" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="javamoduleFlow" doc:id="87a90c38-94bc-4c35-a4c8-890ddca93183" >
+		<http:listener doc:name="Listener" doc:id="37aa18ec-d055-4b91-8d1f-52b117ac3b02" config-ref="HTTP_Listener_config" path="/javamodule"/>
+		<java:new doc:name="New" doc:id="174d7d3e-150c-468c-a436-70196c66b03b" class="org.mule.extensions.java.internal.JavaModule" constructor="JavaModule()" target="object">
+		</java:new>
+		<java:invoke doc:name="Invoke" doc:id="9b301601-49cb-436c-aa5d-6114b2b7d583" instance="#[vars.object]" class="org.mule.extensions.java.internal.JavaModule" method="equals(java.lang.Object)"/>
+	</flow>
+	<flow name="javamoduleFlow1" doc:id="281a7433-be1c-472f-b129-be797d741ad7" >
+		<http:listener doc:name="Listener" doc:id="ceba7162-f05f-498e-9fc0-49e3223af397" config-ref="HTTP_Listener_config1" path="/javamodule1"/>
+		<java:invoke-static doc:name="Invoke static" doc:id="2c59356d-a2fa-4d2b-aa9d-f7a4134f72bd" class="org.mule.extensions.java.internal.JavaModule" method="equals(Object arg0) (equals(java.lang.Object))">
+			<java:args ><![CDATA[#[args0:attributes.queryParams.name]]]></java:args>
+		</java:invoke-static>
+	</flow>
+</mule>

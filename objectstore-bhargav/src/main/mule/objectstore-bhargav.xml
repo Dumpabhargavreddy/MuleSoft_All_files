@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="067bd265-c8f5-4ef9-91ac-73892bd02449" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="13d9f811-5355-4963-bdc3-1bb3b09d086b" />
+	<os:object-store name="Object_store1" doc:name="Object store" doc:id="dfbc88f9-49a8-4330-a40d-508cd9d01757" />
+	<os:object-store name="Object_store2" doc:name="Object store" doc:id="41dbc615-245a-4877-a6db-0a79b1098086" />
+	<flow name="objectstore-bhargavFlow" doc:id="96707163-2e97-4b74-8cf4-4fb82748ad40" >
+		<http:listener doc:name="Listener" doc:id="dc118dc1-5fd2-4aa0-a24d-efc79d186f4c" config-ref="HTTP_Listener_config" path="/objectstoreobj"/>
+		<os:contains doc:name="Contains" doc:id="9b66e901-9a66-4c5f-9ca3-b5d05938d9df" key="LastUpdatedTimeKey" objectStore="Object_store" target="LastUpdatedTimeKey"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d094490f-4104-4aee-ab1a-8bd3ae17c0d9" message="#[vars.LastUpdatedTimeKey]"/>
+		<choice doc:name="Choice" doc:id="a3c20ddc-d980-4484-ba9d-b16ae4d794ba" >
+			<when expression="#[vars.LastUpdatedTimeKey]">
+				<os:store doc:name="Store" doc:id="3ecfcdbd-c3c2-418b-8d78-155c52cf5db5" key="LastUpdatedTimeKey" objectStore="Object_store1">
+					<os:value ><![CDATA[#[now()]]]></os:value>
+				</os:store>
+				<logger level="INFO" doc:name="Logger" doc:id="cc02ec1d-c472-48ca-8933-0920f103bfbf" message="#[payload]"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="ccdd91c0-6618-45d7-b8c8-f183287d066f" message="#[payload]"/>
+				<os:retrieve doc:name="Retrieve" doc:id="ab7b6f4c-de0b-4e66-84c5-326b865bc650" key="LastUpdatedTimeKey" objectStore="Object_store2">
+					<os:default-value ><![CDATA[#[now()]]]></os:default-value>
+				</os:retrieve>
+				<logger level="INFO" doc:name="Logger" doc:id="86255d31-9d19-4a8d-a70b-6f2c809bd9d2" message="#[payload]"/>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

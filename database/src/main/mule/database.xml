@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f3f0c502-a2c5-4f8e-8487-78fe013c6b2d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="fa64963b-0a25-41e4-bd8b-38232d59561a" >
+		<db:mssql-connection host="muletraining.database.windows.net" port="1433" user="user" password="muletraining@123" databaseName="MuleDB" />
+	</db:config>
+	<flow name="databaseFlow" doc:id="71181352-e96e-4a42-93e1-67e7f2e07d8b" >
+		<http:listener doc:name="Listener" doc:id="7b9b69f4-e5b5-483d-bfeb-7422dea65ad7" config-ref="HTTP_Listener_config" path="/database"/>
+		<db:select doc:name="Select" doc:id="14af804f-11b4-4758-90bf-72c52e35f2df" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from SalesLT.Customer where FirstName = 'Bob']]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="91ea4ba6-6f91-4957-be36-e6bccf76cff6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="fd1a3f9d-4e9a-47c7-8565-154be822336a" message="#[payload]"/>
+	</flow>
+</mule>

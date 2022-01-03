@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c2d77626-1da9-4de1-9ed4-23134a86908a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<wsc:config name="Web_Service_Consumer_Config1" doc:name="Web Service Consumer Config" doc:id="9b982c71-1176-4a6f-8415-582dd3f98384" >
+		<wsc:connection wsdlLocation="http://www.dneonline.com/calculator.asmx?wsdl" service="Calculator" port="CalculatorSoap12" address="http://www.dneonline.com/calculator.asmx" />
+	</wsc:config>
+	<flow name="soap-bhargavFlow" doc:id="b4d42a06-6c7d-4d6a-9c39-148e01fd945c" >
+		<http:listener doc:name="Listener" doc:id="5b77b6a2-7b8c-4406-a9ba-36b04b02b5df" config-ref="HTTP_Listener_config" path="/soap"/>
+		<wsc:consume operation="Add" doc:name="Consume" doc:id="28f28332-2aa8-44f2-b32c-bd42ca0556b9" config-ref="Web_Service_Consumer_Config1"/>
+		<ee:transform doc:name="Transform Message" doc:id="a957e8da-1a55-4077-be8a-f7badc66183c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0ns ns0 http://tempuri.org/
+
+output application/json
+---
+{
+	"addition result":payload.body.ns0#addResponse.ns0#addResult
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9165bac4-925f-43dd-9126-94430da0acbe" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="a78b0a24-2b69-4df7-8577-b4b8756e41e2" >
+		<wsc:connection wsdlLocation="wsdl1\Calculator.wsdl" service="Calculator" port="CalculatorHttpSoap12Endpoint" address="http://156.56.179.164:9763/services/Calculator.CalculatorHttpSoap12Endpoint/" />
+	</wsc:config>
+	<flow name="samplewsdlFlow" doc:id="976a6343-34c3-48f2-81fa-8dc05c5a9c40" >
+		<http:listener doc:name="Listener" doc:id="8646ded7-271c-4f31-a262-bf07d6a6ffaa" config-ref="HTTP_Listener_config" path="/samplewsdl"/>
+		<ee:transform doc:name="Transform Message" doc:id="17eb50d8-6604-476d-bfd1-1ba98c625269" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns01 http://tempuri.org/
+---
+{
+	ns01#add: {
+		ns01#n1: payload.value1,
+		ns01#n2: payload.value2
+	}
+	
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="add" doc:name="Consume" doc:id="c4070b07-7cd7-436a-b424-26ef722a7494" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="07389fd1-aa25-4a66-8e2e-3876bc901eaf" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0ns ns0 http://c.b.a
+
+output application/json
+---
+{
+	"Result": payload.body.ns0#addResponse
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="12353a13-42eb-44ff-8c15-6d763a0e0cfb" message="#[payload]"/>
+	</flow>
+</mule>

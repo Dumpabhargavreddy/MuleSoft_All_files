@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3fd93ccc-f6c9-4da5-820c-41e9949c66a2" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="6a21a50e-2415-4785-9961-7f147e0cfcca" >
+		<db:mssql-connection host="${sqldb.host}" port="${sqldb.port}" user="${sqldb.user}" password="${sqldb.password}" databaseName="${sqldb.dbName}" />
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="b2cfff44-5b24-44be-8f28-01a39af392fb" file="propeties\dev.yaml" />
+	<flow name="query-bhargavFlow" doc:id="5ed0b3e2-d407-45db-af2e-e337a399af36" >
+		<http:listener doc:name="Listener" doc:id="540cb612-4c62-4326-8e4b-8d1099841be5" config-ref="HTTP_Listener_config" path="/logger"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a2d3d8f0-3dd4-48ea-aa1c-ee1c999635ae" message="Starting Flow- #[flow.name]- #[payload]"/>
+		<db:insert doc:name="Insert" doc:id="a3a5f0c2-cf27-48b8-bb38-12b193fa0e7d" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into production.categories(category_name) values ('Dumpa bhargav reddy')]]></db:sql>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="56e3ff39-9818-4429-8e8f-d5cec1f83b9f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="query-bhargavFlow1" doc:id="6ce9493b-5bef-4e5d-b9fb-84a9b785c2f1" >
+		<db:listener table="production.categories" doc:name="On Table Row" doc:id="a2b34065-7161-4c23-9f65-b314a188ba66" config-ref="Database_Config" watermarkColumn="category_id">
+			<scheduling-strategy >
+				<fixed-frequency frequency="10" timeUnit="SECONDS" />
+			</scheduling-strategy>
+		</db:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="dbb7faf2-f8ab-4087-acc8-0970d2812b9e" message="#[payload]"/>
+	</flow>
+</mule>

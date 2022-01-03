@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1ff46fbe-69b4-4a5e-bdba-ffcf8b34ab94" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="54fecd64-41aa-4989-ad80-bca17a60dad1" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="accountholder" />
+	</db:config>
+	<flow name="sqlcommand-bhargavFlow" doc:id="b2ad7696-773d-4d5d-9929-7e936705ff3e" >
+		<http:listener doc:name="Listener" doc:id="3db52330-e60c-47f2-93a2-f0f3680c9d88" config-ref="HTTP_Listener_config" path="/command"/>
+		<db:select doc:id="cde20f4d-a79e-4ceb-b6a8-37dddd1e4663" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from accountholder.details where account_number = 91919]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="e5c5fcf2-22c0-405a-8774-1d5ce204d4b3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sqlcommand-bhargavFlow1" doc:id="4efcc7f5-cb1a-4b8c-81d9-8e379301056b" >
+		<http:listener doc:name="Listener" doc:id="3e8896e3-8337-4702-85a6-fd5f7df0f815" config-ref="HTTP_Listener_config" path="/insert"/>
+		<db:insert doc:name="Insert" doc:id="cb3bb33c-9577-4b91-934e-bd60de962ab6" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into accountholder.details (account_number,name,mobileno,address) values (9192,'vishnu',8186,'duvvur');]]></db:sql>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="aa8dabac-48c2-495c-b5d7-7a68168d028e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

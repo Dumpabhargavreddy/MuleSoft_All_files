@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="64f6c0a8-e0f0-4781-9b6d-d708a7a89626" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="errorhandling-baFlow" doc:id="713556c5-7ac4-4a12-a882-2d861c42e1f7" >
+		<http:listener doc:name="Listener" doc:id="2d125942-ae56-4701-b248-f247c6e8feba" config-ref="HTTP_Listener_config" path="/errorcontinue"/>
+		<flow-ref doc:name="Flow Reference" doc:id="8eaaeb55-6961-417f-84fa-76b8aec787f7" name="errorhandling-baFlow1"/>
+	</flow>
+	<flow name="errorhandling-baFlow1" doc:id="06ce4a96-af91-4f9d-9501-83f3d83e97ce" >
+		<set-payload value='#["welcome to private"]' doc:name="Set Payload" doc:id="27d8620f-521b-4f4e-80c5-3991dc98cae9" />
+	</flow>
+</mule>

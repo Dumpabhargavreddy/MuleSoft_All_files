@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1833f3f5-49e5-487a-8c8e-87c73b20a176" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="flows-bbbbprivateFlow" doc:id="68cbf491-d5ad-44c8-883d-5241de2f3275" >
+		<set-payload value='#["welcome to private flow"]' doc:name="Set Payload" doc:id="bf4e0911-d049-48d8-8a50-d3434fc896fe" />
+	</flow>
+	<flow name="flows-bbbbFlow" doc:id="9a3f9be1-08c7-44fc-a93b-72c974f35b31" >
+		<http:listener doc:name="Listener" doc:id="06b22f66-3337-4564-b24f-88e0af70d888" config-ref="HTTP_Listener_config" path="/main"/>
+		<set-payload value='#["Hello welcome to the main Flow"]' doc:name="Set Payload" doc:id="11a8e222-8953-4c5f-bc0f-11763ae0181f" />
+		<flow-ref doc:name="Flow Reference" doc:id="86a37dce-ac3a-424e-a63c-8687609bdee4" name="flows-bbbbSub_Flow"/>
+		<flow-ref doc:name="Flow Reference" doc:id="28054c00-a729-455e-96d0-7bcf38f8f9ae" name="flows-bbbbprivateFlow" />
+	</flow>
+	<sub-flow name="flows-bbbbSub_Flow" doc:id="90a24829-a954-4ec8-bf41-a19a7be37deb" >
+		<set-payload value='#["Hai welcome to the sub flow"]' doc:name="Set Payload" doc:id="67ee38bd-0f50-4f59-9444-90e2f6b11fea" />
+	</sub-flow>
+</mule>

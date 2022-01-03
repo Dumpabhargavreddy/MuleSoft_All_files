@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d0b38a74-0865-432f-bc6a-17096e244f89" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="multiplicationFlow" doc:id="5f1f5b57-89ba-43e2-bad2-12540115e12c" >
+		<http:listener doc:name="Listener" doc:id="dfb3a27b-70df-4c4c-abaf-541bf78f9529" config-ref="HTTP_Listener_config" path="multiplication"/>
+		<ee:transform doc:name="Transform Message" doc:id="13b6f410-af22-4fdf-9b0d-80aa76940e4a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+   
+ "query1":(attributes.queryParams.q1 as Number) * (attributes.queryParams.q2 as Number)
+     	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2b697483-69b8-429f-8908-ebeed9e0f6ee" message="multiplication"/>
+	</flow>
+</mule>

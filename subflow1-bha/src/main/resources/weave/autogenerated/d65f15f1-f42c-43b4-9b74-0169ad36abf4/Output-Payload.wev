@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_d65f15f1_f42c_43b4_9b74_0169ad36abf4_Output_Payload = {| response: String |}
+

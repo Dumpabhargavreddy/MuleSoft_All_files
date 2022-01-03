@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="258cb842-8ec1-410f-b27c-ed1ee1fb0fbd" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="errorpropFlow" doc:id="75ed91c0-4170-4b6e-beed-7f57f7814042" >
+		<http:listener doc:name="Listener" doc:id="1ed6da38-6d94-4ce4-9f03-d8eec71cc102" config-ref="HTTP_Listener_config" path="/prop">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<flow-ref doc:name="Flow Reference" doc:id="d8fdc9dc-952a-4b93-a41a-cc033fd898a3" name="errorpropFlow"/>
+		<set-payload value='#["default error handler"]' doc:name="Set Payload" doc:id="7a543c0d-1fce-4bec-9f33-8119f77f4f34" />
+	</flow>
+	<flow name="errorpropFlow1" doc:id="032da806-8e8d-4436-88a4-01565365ce96" >
+		<http:request method="CONNECT" doc:name="Request" doc:id="46dcf0f7-c46a-42ee-ba6c-e0ccacaf30cd" url="hghfvdgrf"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="bbf7396f-6152-4c62-8edc-17bb1eb0f401" type="HTTP:CONNECTIVITY">
+				<set-payload value='#["custom error handler"]' doc:name="Set Payload" doc:id="a8fbe925-fc08-4d16-bedf-e5f4208f3c4c" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

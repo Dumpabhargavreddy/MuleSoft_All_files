@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="493725c7-66d3-448f-a612-a75a9256b41d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="test2-bhargavFlow" doc:id="1ee849df-2664-4b36-8cd5-5a4237c32882" >
+		<http:listener doc:name="Listener" doc:id="35cf729e-114c-42f5-8bf8-896c2c86d780" config-ref="HTTP_Listener_config" path="/test2"/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="bf4345a3-0de8-4e56-936f-92312d450e01" variableName="CorrelationId"/>
+		<choice doc:name="Choice" doc:id="1aea61e0-fda3-4888-a6ab-91ca71a44b85" >
+			<when expression="((attributes.queryParams.productid&gt;= 10001 as Number) and (attributes.queryParams.productid&lt;99999 as Number))">
+				<java:new constructor="mule()" doc:name="New" doc:id="7065f030-4e94-4d3f-9641-9e0e169aeb0c" class="com.project.mule" target="Static"/>
+				<java:invoke method="getproductid(int)" doc:name="Invoke" doc:id="06daf868-9837-49ae-beb0-57c3b6977638" instance="#[vars.Static]" class="com.project.mule">
+					<java:args ><![CDATA[#[{
+	arg0: attributes.queryParams.productid
+}]]]></java:args>
+				</java:invoke>
+				<set-payload value="valid input id" doc:name="Set Payload" doc:id="50aea75a-8d40-40ca-ac56-84b01bfa7648" />
+			</when>
+			<otherwise >
+				<set-payload value="invalid input id" doc:name="Set Payload" doc:id="6bb419a9-7f83-4f3e-9867-5f8738117edc" />
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="test2-bhargavFlow1" doc:id="9ecd3841-c82d-49b2-99ce-eb9e98b09bd3" >
+		<http:listener doc:name="Listener" doc:id="994bc059-a63e-488c-8a65-c4765f48b41e" config-ref="HTTP_Listener_config" path="/test3"/>
+		<java:new constructor="mule()" doc:name="New" doc:id="2c03835a-3872-4443-9fa8-1d26514fd0b5" class="com.project.mule" target="Static2"/>
+		<java:invoke doc:name="Invoke" doc:id="8083487b-4df9-4188-9a50-4cfbfdb50494" instance="#[vars.Static2]" class="com.project.mule" method="getamount(java.lang.String)">
+			<java:args ><![CDATA[#[{
+	arg0 : payload.size as String
+}]]]></java:args>
+		</java:invoke>
+		<ee:transform doc:name="Transform Message" doc:id="6b1cf18f-3f48-41f9-8beb-42382b678ead" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Total amount" : payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

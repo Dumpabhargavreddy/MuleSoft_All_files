@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="317f6cf7-505f-4d96-bd3e-d5dde6f1b31d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="01444e0a-6856-4daf-9241-e95a4b17f81e" >
+		<file:connection workingDir="C:\read" />
+	</file:config>
+	<flow name="readfile-bhargavFlow" doc:id="7767d82b-3e87-4bab-af1e-423a2cd17835" >
+		<http:listener doc:name="Listener" doc:id="d8a6f933-0525-4278-a22e-96c704bc707e" config-ref="HTTP_Listener_config" path="/readfile"/>
+		<file:read doc:name="Read" doc:id="11d678f1-090c-4a26-940e-c46e283bc027" config-ref="File_Config" path="bhargav.txt"/>
+		<choice doc:name="Choice" doc:id="45dcc98c-7921-428e-a714-4a92ad7ea7ff" >
+			<when expression="#[isEmpty(payload)]">
+				<file:write doc:name="Write" doc:id="54292e16-5c1e-4bb9-bff4-9862f254ff47" config-ref="File_Config" path="writefile2.txt">
+					<file:content ><![CDATA[#["my name is bhargavreddy"]]]></file:content>
+				</file:write>
+				<logger level="INFO" doc:name="Logger" doc:id="707ce373-8da5-414c-bc02-8c2a76b5c9b7" message="write logger"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="7ee16608-6b3b-48fd-9514-26d3f4e87557">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"name" : "Bhargav",
+	"file" :"This output id in the form of txt"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<file:write doc:name="Write" doc:id="440e6dfd-a546-4559-bbb6-2ae5971e973b" config-ref="File_Config" path="write.txt" mode="APPEND">
+		</file:write>
+				<set-payload value="#[payload]" doc:name="Set Payload" doc:id="a83634a2-e6a8-4c7f-be11-332705cfa403" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="reading file" doc:id="cfe2705d-ef27-4686-bab9-7eafb34dd4e9" message="#[payload]"/>
+	</flow>
+</mule>

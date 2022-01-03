@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="project2Flow" doc:id="59c7eda1-8ded-4178-8bfc-406ce33af114" >
+		<http:listener doc:name="Listener" doc:id="7d269b75-cdea-4633-8cbc-c9a73ddb6cb6" config-ref="HTTP_Listener_config" path="/project2"/>
+		<db:insert doc:name="Insert" doc:id="25afe308-1d60-4b75-9b58-5cd179f0133c" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into production.categories (category_name) values ('bhargav')]]></db:sql>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="fa977e70-79fb-49cd-8a35-e68e8cef9332" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

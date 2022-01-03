@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="insert1-bhargav-suite.xml" />
+	<munit:test name="insert1-bhargavFlow-success" doc:id="46e5a98e-5542-4633-8575-6836bc080a5e" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Update" doc:id="8a604322-4c4e-4114-9ab9-b6093a476060" processor="db:update">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="86e1d8f0-1d00-4426-ac16-f6eac8f4b079" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://insert1bhargavFlowsuccess\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="d77ae4b1-2cb2-41a1-b25c-88684042559e" >
+				<munit:payload value="#[readUrl('classpath://insert1bhargavFlowsuccess\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://insert1bhargavFlowsuccess\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to insert1-bhargavFlow" doc:id="dcec8748-e493-4755-a8a6-e197d7187ae2" name="insert1-bhargavFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="250b5c1f-e6c6-4a8e-baf7-0788ac4bfb0b" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import insert1bhargavFlowsuccess::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

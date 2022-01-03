@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7936219f-bcfc-4ebd-ba70-50ed21c55288" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="java2Flow" doc:id="485a0862-055a-4d1a-8ded-8e681366fe5d" >
+		<http:listener doc:name="Listener" doc:id="d5af99e6-8112-497b-b68f-9b68a57f40ad" config-ref="HTTP_Listener_config" path="/java2"/>
+		<ee:transform doc:name="Transform Message" doc:id="e52be106-633e-4e36-a1a3-5dd58ef2f108" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+import java!java2::java2
+---
+{
+	"Message": java2::getmethod(),
+	"name": "bhargav",
+	"age": 21,
+}
+	             
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="382d403b-1c30-4daa-9257-385d426f6524" message="correlationid-#[vars.correlationid]"/>
+	</flow>
+</mule>

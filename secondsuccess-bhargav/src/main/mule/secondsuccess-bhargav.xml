@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="12d72826-6672-4f43-a919-5a7568ecf113" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="8e845e97-441b-4a55-8914-0242fa64b6c1" >
+		<http:request-connection host="assignment2-bhargav.us-e2.cloudhub.io" />
+	</http:request-config>
+	<flow name="secondsuccess-bhargavFlow" doc:id="3cd79883-a9dd-4270-85e0-100b543c6855" >
+		<http:listener doc:name="Listener" doc:id="9806f446-0113-4ba1-8fef-9550fddb2752" config-ref="HTTP_Listener_config" path="/until"/>
+		<ee:transform doc:name="Transform Message" doc:id="2f458a5f-7909-4ea4-bbcc-5193fda6be80" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"name" : "bhargav",
+	"size" : "M"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<until-successful maxRetries="3" doc:name="until successful" doc:id="ca5673e8-2c11-4247-a640-0435816185b2" millisBetweenRetries="10000">
+			<http:request method="GET" doc:name="Request" doc:id="1a758494-3ebc-4e31-9a8d-18190b8aa4b6" path="/getamount" config-ref="HTTP_Request_configuration"/>
+		</until-successful>
+		<logger level="INFO" doc:name="Logger" doc:id="007bea11-3cb1-448c-85cc-d93a8f847158" message="endlogger"/>
+	</flow>
+</mule>
