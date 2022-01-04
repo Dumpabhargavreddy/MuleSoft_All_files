@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e89e45c3-0873-4fd5-aca0-bb104f69df80" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="9053b28c-b5ad-4995-a002-72755029907e" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="accountholder" />
+	</db:config>
+	<flow name="batchproccesingFlow" doc:id="1c8d0673-b5af-4571-8746-ca02d6376b2a" >
+		<http:listener doc:name="Listener" doc:id="5b4bfff2-f7d0-44d6-9dcd-6042487b991f" config-ref="HTTP_Listener_config" path="/process"/>
+		<batch:job jobName="batchproccesingBatch_Job" doc:id="e489b75f-a0f2-44d5-a275-7c94410f7742" maxFailedRecords="-1">
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="e52825e0-18a4-4f4f-a309-b37635647132">
+					<db:insert doc:name="Insert" doc:id="44aee31d-2992-4e11-a716-d35427983123" config-ref="Database_Config">
+			<db:sql><![CDATA[insert into accountholder.details(account_no,name,mobileno,address) valuess(:account_no,:name,:mobileno,:address);
+]]></db:sql>
+						<db:input-parameters ><![CDATA[#[{
+	account_no:payload.account_no,
+	name:payload.name,
+	mobileno:payload.mobileno,
+	address:payload.address
+
+}]]]></db:input-parameters>
+		</db:insert>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="bfb998a6-4278-437e-9b16-dfbeb2ad7740" streaming="true">
+						<logger level="INFO" doc:name="Logger" doc:id="bb3dc4fa-ebd1-4f25-a808-7f5bd57a3e53" message="#[payload]"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="ace40fac-78a9-46a9-b096-097b3e27aa66" message="#[payload]"/>
+			</batch:on-complete>
+		</batch:job>
+		<ee:transform doc:name="Transform Message" doc:id="ce005e30-535e-465d-a237-ceac8d97b46d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
